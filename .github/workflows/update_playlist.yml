@@ -26,6 +26,7 @@ jobs:
       run: |
         python make_playlist.py
         python make_adult.py
+        python make_scribd.py
 
     - name: Commit and Push changes
       run: |
