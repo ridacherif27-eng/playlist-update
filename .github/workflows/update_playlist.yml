@@ -31,6 +31,6 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add live_playlist.m3u adult_playlist.m3u
-        git commit -m "Update playlists" || exit 0
+        git add --all
+        git commit -m "Update playlists and satellites" || exit 0
         git push
