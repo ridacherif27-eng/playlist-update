@@ -6,7 +6,8 @@ OUTPUT_FILE = "live_playlist.m3u"
 SOURCES = [
     "https://raw.githubusercontent.com/mohammad94S/IPTV/main/BeIN_Sports.m3u",
     "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/fr.m3u",
-    "https://iptv-org.github.io/iptv/categories/sports.m3u"
+    "https://iptv-org.github.io/iptv/categories/sports.m3u",
+    "https://iptvmate.net/files/adult.m3u"
 ]
 
 def fetch_and_build():
