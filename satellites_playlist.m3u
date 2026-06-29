@@ -1003,6 +1003,10 @@ http://41.205.77.102/GULLI/index.m3u8
 http://41.205.77.102/DISNEY-JUNIOR/index.m3u8
 #EXTINF:-1 tvg-id="Mezzo.fr@SD",Mezzo (1080p)
 https://live-3.otcnet.ru/Mezzo/index.m3u8
+#EXTINF:-1 tvg-id="MTV.fr@SD",MTV (720p)
+http://41.205.70.146/MTVFRANCE/index.m3u8
+#EXTINF:-1 tvg-id="EuronewsHungarian.fr@SD",Euronews Hungarian
+https://budapest-cache-1.antik.sk/live/test_euronews_hu_1200_atk/playlist.m3u8
 #EXTINF:-1 tvg-id="4FunKids.pl@SD",4 Fun Kids (576i) [[Not 24/7]]
 https://stream.4fun.tv:8889/hls/4fk_high/index.m3u8
 #EXTINF:-1 tvg-id="4FunTV.pl@SD",4 Fun TV (576i) [Not 24/7]
@@ -1845,3 +1849,5 @@ https://adpnetworkhd-cmd.github.io/iptv/NDR.m3u8
 #EXTINF:-1 tvg-id="RTLSuper.de@HD",RTL Super HD (1080p)
 https://adpnetworkhd-cmd.github.io/iptv/RTLSuperToggoHD.m3u8
 #EXTINF:-1 tvg-id="ComedyCentral.de@SD",Comedy Central
+#EXTINF:-1 tvg-id="Motorvision.de@SD",Motorvision (576p)
+http://hls127.freeott.top:8080/Motorvision/video.m3u8
