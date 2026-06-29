@@ -4,20 +4,20 @@ import requests
 # اسم ملف القائمة النهائي الذي سيتم إنشاؤه
 OUTPUT_FILE = "adult_playlist.m3u"
 
-# مصادر بث قوية ومحدثة تحتوي على باقات الأقمار الأوروبية (Hotbird, Astra, BulgariaSat)
+# مصادر بث حية ومحدثة وموسعة تحتوي على باقات الأقمار الأوروبية
 SOURCES = [
     "https://iptv-org.github.io/iptv/categories/adult.m3u",
     "https://raw.githubusercontent.com/MoDirect/AdultIPTV/master/AdultIPTV.m3u",
-    "https://raw.githubusercontent.com/skylinuxtv/E2-IPTV/main/adults.m3u"
+    "https://raw.githubusercontent.com/skylinuxtv/E2-IPTV/main/adults.m3u",
+    "https://raw.githubusercontent.com/Tofiko02/Adult/main/Adult.m3u",
+    "https://raw.githubusercontent.com/orion0-0/Free-IPTV/main/Adult.m3u"
 ]
 
-# قائمة قنوات الكبار الشهيرة على أقمار Hotbird و Astra و BulgariaSat للتصفية والتمويه
+# قائمة قنوات الكبار الشهيرة للتصفية والتمويه
 TARGET_CHANNELS = [
-    # باقات هوت بيرد وأسترا المعروفة
     "Hustler", "Dorcel", "Private", "Redlight", "XXL", "SCT", "Satisfaction", 
     "Passion", "Evil Angel", "Vivid", "Blue Hustler", "Brazzers", "Penthouse", 
     "Playboy", "Centoxcento", "Pink", "Man-X", "Dusk", "Vixen", "Freex", "X-Muzik",
-    # قنوات القمر البلغاري والأوروبية الأخرى
     "SuperOne", "Erox", "Eroxxx", "Leo", "Cento", "Amore", "Roxy", "Teleitalia"
 ]
 
@@ -26,7 +26,7 @@ def fetch_and_mask_playlist():
     has_channels = False
     counter = 1
     
-    print("بدء جلب قنوات أقمار (Hotbird / Astra / BulgariaSat) وتطبيق التمويه...")
+    print("بدء جلب القنوات من المصادر الموسعة وتطبيق التمويه...")
     
     for url in SOURCES:
         try:
@@ -38,13 +38,12 @@ def fetch_and_mask_playlist():
                     if lines[i].strip().startswith("#EXTINF"):
                         info_line = lines[i].strip()
                         
-                        # التحقق من وجود القناة ضمن القائمة المستهدفة للأقمار
+                        # التحقق من وجود القناة ضمن القائمة المستهدفة
                         if any(target.lower() in info_line.lower() for target in TARGET_CHANNELS):
-                            # التأكد من وجود رابط البث في السطر التالي
                             if i + 1 < len(lines) and lines[i+1].strip().startswith("http"):
                                 stream_url = lines[i+1].strip()
                                 
-                                # إنشاء الاسم المموّه لحمايته في التطبيق (Premium Movie)
+                                # التمويه لحماية الرابط في التطبيق
                                 masked_info = f'#EXTINF:-1 tvg-logo="" group-title="Satellites Premium",Premium Movie {counter}'
                                 
                                 playlist_content += masked_info + "\n" + stream_url + "\n"
@@ -54,15 +53,13 @@ def fetch_and_mask_playlist():
         except Exception as e:
             print(f"خطأ أثناء الجلب من المصدر {url}: {e}")
 
-    # إذا لم يجد السكربت أي قناة (كحماية للملف)
     if not has_channels:
         playlist_content += "#EXTINF:-1,--- NO CHANNELS FOUND ---\nhttp://0.0.0.0\n"
 
-    # كتابة وحفظ الملف الجديد تماماً
     try:
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
             f.write(playlist_content)
-        print(f"نجاح! تم تحديث ملف '{OUTPUT_FILE}' بقنوات الأقمار المحددة وبأسماء مموهة.")
+        print(f"نجاح! تم تحديث ملف '{OUTPUT_FILE}' بنجاح وبأحدث الروابط الشغالة.")
     except Exception as e:
         print(f"خطأ أثناء حفظ الملف: {e}")
 
