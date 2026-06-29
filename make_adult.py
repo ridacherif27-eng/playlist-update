@@ -1,21 +1,23 @@
 import os
 import requests
 
-OUTPUT_FILE = "satellites_playlist.m3u"
+OUTPUT_FILE = "adult_playlist.m3u"
 
-# مصادر قنوات استرا وهوت بيرد محدثة تلقائياً
 SOURCES = [
-    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/it.m3u",  # قنوات إيطالية (هوت بيرد)
-    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/fr.m3u",  # قنوات فرنسية (أسترا وهوت بيرد)
-    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/pl.m3u",  # قنوات بولندية (هوت بيرد)
-    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/de.m3u"   # قنوات ألمانية (أسترا)
+    "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/adult.m3u"
 ]
 
-def fetch_satellites():
+TARGET_CHANNELS = [
+    "Hustler", "Dorcel", "Private", "Redlight", "XXL", "SCT", 
+    "PassionXXX", "Evil Angel", "Vivid", "Blue Hustler", "Satisfaction"
+]
+
+def fetch_adult_satellite():
     playlist_content = "#EXTM3U\n"
     has_channels = False
+    counter = 1
     
-    print("Starting to fetch Astra and Hotbird channels...")
+    print("Starting to fetch Adult Satellite channels...")
     
     for url in SOURCES:
         try:
@@ -24,24 +26,29 @@ def fetch_satellites():
                 lines = response.text.splitlines()
                 for i in range(len(lines)):
                     if lines[i].strip().startswith("#EXTINF"):
-                        # نجيبو سطر المعلومات وسطر رابط التشغيل اللي بعدو مباشرة
-                        playlist_content += lines[i].strip() + "\n"
-                        if i + 1 < len(lines) and lines[i+1].strip().startswith("http"):
-                            playlist_content += lines[i+1].strip() + "\n"
-                            has_channels = True
+                        info_line = lines[i].strip()
+                        
+                        if any(target.lower() in info_line.lower() for target in TARGET_CHANNELS):
+                            if i + 1 < len(lines) and lines[i+1].strip().startswith("http"):
+                                stream_url = lines[i+1].strip()
+                                
+                                masked_info = f'#EXTINF:-1 tvg-logo="" group-title="Satellites Premium",Premium Movie {counter}'
+                                
+                                playlist_content += masked_info + "\n" + stream_url + "\n"
+                                counter += 1
+                                has_channels = True
         except Exception as e:
             print(f"Error fetching from {url}: {e}")
 
-    # خطة احتياطية إذا كانت المصادر كامل حابسة
     if not has_channels:
-        playlist_content += "#EXTINF:-1,--- SATELLITE SOURCES DOWN ---\nhttp://0.0.0.0\n"
+        playlist_content += "#EXTINF:-1,--- CHANNELS NOT FOUND OR DOWN ---\nhttp://0.0.0.0\n"
 
     try:
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
             f.write(playlist_content)
-        print(f"Success! File '{OUTPUT_FILE}' has been created.")
+        print(f"Success! File '{OUTPUT_FILE}' has been updated.")
     except Exception as e:
         print(f"Write Error: {e}")
 
 if __name__ == "__main__":
-    fetch_satellites()
+    fetch_adult_satellite()
