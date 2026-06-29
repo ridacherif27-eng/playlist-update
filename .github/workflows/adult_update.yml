@@ -1,0 +1,32 @@
+name: Update Adult Playlist
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'  # يعمل تلقائياً كل 12 ساعة لتحديث القنوات
+  workflow_dispatch:      # يتيح لك تشغيله يدوياً في أي وقت
+
+jobs:
+  update_list:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install Dependencies
+      run: pip install requests
+
+    - name: Run Scraper Script
+      run: python make_adult.py
+
+    - name: Commit and Push Changes
+      run: |
+        git config --global user.name "actions-user"
+        git config --global user.email "actions@github.com"
+        git add adult_playlist.m3u
+        git commit -m "تحديث تلقائي لقنوات هوت بيرد وأسترا وبُلغاريا" || exit 0
+        git push
