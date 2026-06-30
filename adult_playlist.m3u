@@ -65,3 +65,5 @@ http://adulttv.host:8080/live/adult/adult/31.m3u8
 http://adulttv.host:8080/live/adult/adult/32.m3u8
 #EXTINF:-1 group-title="Adult Premium TV",Television X
 http://adulttv.host:8080/live/adult/adult/33.m3u8
+#EXTINF:-1 group-title="Adult Premium TV",Dusk TV
+http://adulttv.host:8080/live/adult/adult/34.m3u8
