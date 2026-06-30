@@ -2,7 +2,7 @@ import os
 
 OUTPUT_FILE = "adult_playlist.m3u"
 
-# القائمة الشاملة والثابتة لجميع القنوات المطلوبة بروابط بث مباشرة ومستقرة
+# باقة شاملة ومباشرة ومفتوحة بدون حماية لضمان نزول كامل القنوات في الملف الشغال
 CHANNELS_DATA = [
     {"name": "Brazzers TV HD", "url": "http://adulttv.host:8080/live/adult/adult/1.m3u8"},
     {"name": "Brazzers TV Europe", "url": "http://adulttv.host:8080/live/adult/adult/2.m3u8"},
@@ -23,42 +23,4 @@ CHANNELS_DATA = [
     {"name": "Eroxxx HD TV", "url": "http://adulttv.host:8080/live/adult/adult/17.m3u8"},
     {"name": "XXL TV", "url": "http://adulttv.host:8080/live/adult/adult/18.m3u8"},
     {"name": "CentoXCento TV", "url": "http://adulttv.host:8080/live/adult/adult/19.m3u8"},
-    {"name": "Playboy TV", "url": "http://adulttv.host:8080/live/adult/adult/20.m3u8"},
-    {"name": "Pinko Club TV", "url": "http://adulttv.host:8080/live/adult/adult/21.m3u8"},
-    {"name": "Penthouse Passion", "url": "http://adulttv.host:8080/live/adult/adult/22.m3u8"},
-    {"name": "Penthouse TV", "url": "http://adulttv.host:8080/live/adult/adult/23.m3u8"},
-    {"name": "Penthouse Black", "url": "http://adulttv.host:8080/live/adult/adult/24.m3u8"},
-    {"name": "Penthouse Gold", "url": "http://adulttv.host:8080/live/adult/adult/25.m3u8"},
-    {"name": "Vivid TV", "url": "http://adulttv.host:8080/live/adult/adult/26.m3u8"},
-    {"name": "SuperONE TV", "url": "http://adulttv.host:8080/live/adult/adult/27.m3u8"},
-    {"name": "Sextreme TV", "url": "http://adulttv.host:8080/live/adult/adult/28.m3u8"},
-    {"name": "SexPrive", "url": "http://adulttv.host:8080/live/adult/adult/29.m3u8"},
-    {"name": "Evil Angel", "url": "http://adulttv.host:8080/live/adult/adult/30.m3u8"},
-    {"name": "Barely Legal TV", "url": "http://adulttv.host:8080/live/adult/adult/31.m3u8"},
-    {"name": "Extasy4K", "url": "http://adulttv.host:8080/live/adult/adult/32.m3u8"},
-    {"name": "Television X", "url": "http://adulttv.host:8080/live/adult/adult/33.m3u8"}
-]
-
-def build_playlist():
-    playlist_content = "#EXTM3U\n"
-    channels_count = 0
-    
-    print("⚙️ جاري بناء قائمة القنوات الثابتة...")
-    
-    for channel in CHANNELS_DATA:
-        # صياغة السطر ليكون متوافقاً تماماً مع دراما لايف وكل مشغلات IPTV
-        clean_line = f'#EXTINF:-1 group-title="Adult Premium TV",{channel["name"]}'
-        playlist_content += clean_line + "\n"
-        playlist_content += channel["url"] + "\n"
-        channels_count += 1
-        
-    # حفظ الملف النهائي
-    try:
-        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-            f.write(playlist_content)
-        print(f"\n🚀 مريقل 100%! تم إنشاء الملف بنجاح ويحتوي على {channels_count} قناة ثابتة بالأسماء والروابط.")
-    except Exception as e:
-        print(f"❌ فشل حفظ ملف m3u: {e}")
-
-if __name__ == "__main__":
-    build_playlist()
+    {"name": "Playboy TV", "url": "http://adulttv.host:
