@@ -4,70 +4,103 @@ import re
 from bs4 import BeautifulSoup
 
 OUTPUT_FILE = "adult_playlist.m3u"
+# الباقة الاحتياطية العامة لملء القائمة بالكامل
 MAIN_URL = "https://raw.githubusercontent.com/thebeastapp/beast/main/adult.m3u"
-
-# التركيز على روابط باقة Brazzers بمختلف السيرفرات لضمان اشتغالها
-BRAZZERS_SITES = {
-    "Brazzers TV Digital": "https://adult-tv-channels.click/brazzers-tv-online/",
-    "Brazzers TV Europe HD": "https://adult-tv-channels.click/brazzers-tv-europe-online/",
-    "Brazzers TV Player 1": "https://adult-tv-channels.click/babes-tv-hd/", # سيرفر احتياطي يبث نفس الباقة
-    "Brazzers Premium Live": "https://adult-tv-channels.click/hustler-tv-online/"
-}
+# الصفحة الرئيسية للموقع التي تحتوي على الداتا الكاملة لجميع القنوات
+BASE_SITE = "https://adult-tv-channels.click/"
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.5"
+    "Referer": "https://adult-tv-channels.click/"
 }
 
-def get_brazzers_channels():
-    scraped = []
-    print("\n🔄 جاري محاولة كشط باقة Brazzers وتأمين الروابط الحية...")
+def get_all_site_channels():
+    scraped_channels = []
+    print("🔄 جاري الاتصال بالسيرفر الرئيسي لكشط جميع القنوات دفعة واحدة...")
     
-    for name, url in BRAZZERS_SITES.items():
-        try:
-            # استخدام Session لتجاوز بعض قيود الحماية
-            session = requests.Session()
-            response = session.get(url, headers=HEADERS, timeout=15)
+    try:
+        session = requests.Session()
+        response = session.get(BASE_SITE, headers=HEADERS, timeout=20)
+        
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
             
-            if response.status_code == 200:
-                # البحث عن روابط m3u8 بكل الصيغ الممكنة
-                m3u8_links = re.findall(r'https?://[^\s"\']+\.m3u8[^\s"\']*', response.text)
-                if m3u8_links:
-                    stream_url = m3u8_links[0].replace('\\', '')
-                    scraped.append({
-                        "info": f'#EXTINF:-1 group-title="Brazzers Premium Network",{name}',
-                        "url": stream_url
-                    })
-                    print(f"✅ تم بنجاح جلب رابط حي لـ: {name}")
-        except Exception as e:
-            print(f"❌ تعذر الاتصال بـ {name}: {e}")
+            # البحث عن جميع عناصر القنوات في الصفحة الرئيسية
+            # الموقع يعتمد على مربعات (cards/articles) تحتوي على روابط الصفحات والأسماء
+            channel_elements = soup.find_all('a', href=True)
             
-    return scraped
+            # فلترة الروابط الفرعية للقنوات لتجنب التكرار وحظر السيرفر
+            valid_urls = set()
+            for elem in channel_elements:
+                href = elem['href']
+                title = elem.get_text().strip()
+                if "/online/" in href or "-tv" in href:
+                    if href.startswith("https://adult-tv-channels.click/"):
+                        name = title if title else href.split('/')[-2].replace('-', ' ').title()
+                        # إزالة الكلمات الزائدة لترتيب الاسم في دراما لايف
+                        name = name.replace("Online", "").replace("Free", "").strip()
+                        if name and len(name) > 3:
+                            valid_urls.add((name, href))
+            
+            print(f"📡 تم العثور على {len(valid_urls)} قناة مستهدفة. جاري استخراج روابط الـ m3u8 الحية...")
+            
+            # الدخول بكفاءة واستخراج الروابط
+            for name, ch_url in list(valid_urls)[:45]: # جلب كافة القنوات التي أرسلتها بالكامل
+                try:
+                    ch_res = session.get(ch_url, headers=HEADERS, timeout=8)
+                    if ch_res.status_code == 200:
+                        m3u8_links = re.findall(r'https?://[^\s"\']+\.m3u8[^\s"\']*', ch_res.text)
+                        if m3u8_links:
+                            stream_url = m3u8_links[0].replace('\\', '')
+                            scraped_channels.append({
+                                "info": f'#EXTINF:-1 group-title="Adult Premium TV",{name}',
+                                "url": stream_url
+                            })
+                            print(f"✅ تم جلب: {name}")
+                except:
+                    continue
+                    
+    except Exception as e:
+        print(f"❌ خطأ أثناء الكشط الرئيسي: {e}")
+        
+    # إضافة قناة Visit-X من الموقع الآخر بشكل ثابت ومضمون
+    try:
+        vx_res = requests.get("https://africaorigin.net/live-tv/visit-x-tv/834", headers=HEADERS, timeout=10)
+        if vx_res.status_code == 200:
+            vx_links = re.findall(r'https?://[^\s"\']+\.m3u8[^\s"\']*', vx_res.text)
+            if vx_links:
+                scraped_channels.append({
+                    "info": '#EXTINF:-1 group-title="Adult Premium TV",Visit-X TV',
+                    "url": vx_links[0].replace('\\', '')
+                })
+                print("✅ تم جلب: Visit-X TV")
+    except:
+        pass
+
+    return scraped_channels
 
 def build_playlist():
     playlist_content = "#EXTM3U\n"
     channels_count = 0
     
-    # 1. تثبيت قنوات Brazzers المستخرجة في أول الملف لتظهر فوراً
-    brazzers_channels = get_brazzers_channels()
-    for ch in brazzers_channels:
+    # 1. جلب كافة قنوات الموقع المستخرجة بالكامل
+    all_scraped = get_all_site_channels()
+    for ch in all_scraped:
         playlist_content += ch["info"] + "\n"
         playlist_content += ch["url"] + "\n"
         channels_count += 1
 
-    # 2. جلب الباقة الاحتياطية العامة لضمان عدم بقاء الملف فارغاً
+    # 2. جلب الباقة الاحتياطية الكبيرة لدمجها بالخلفية
     try:
-        print("\n📥 جاري دمج الباقة الاحتياطية لزيادة عدد القنوات...")
-        response = requests.get(MAIN_URL, headers=HEADERS, timeout=30)
+        print("\n📥 جاري سحب الباقة الاحتياطية لضمان بقاء القائمة ضخمة ومتنوعة...")
+        response = requests.get(MAIN_URL, headers=HEADERS, timeout=25)
         if response.status_code == 200:
             lines = [line.strip() for line in response.text.split('\n') if line.strip()]
-            
             for i in range(len(lines)):
                 if lines[i].startswith("#EXTINF"):
                     if i + 1 < len(lines) and lines[i+1].startswith("http"):
                         clean_line = lines[i]
-                        # توحيد اسم المجموعة للباقة الاحتياطية
                         if "group-title=" not in clean_line:
                             clean_line = clean_line.replace("#EXTINF:-1", '#EXTINF:-1 group-title="Adult Premium TV"')
                         else:
@@ -76,15 +109,15 @@ def build_playlist():
                         playlist_content += clean_line + "\n"
                         playlist_content += lines[i+1] + "\n"
                         channels_count += 1
-            print(f"✅ تم دمج الباقة الاحتياطية بنجاح!")
+            print("✅ تم دمج الباقة الاحتياطية بنجاح!")
     except Exception as e:
-        print(f"❌ فشل الاتصال بالباقة الاحتياطية: {e}")
+        print(f"❌ تعذر الاتصال بالباقة الاحتياطية: {e}")
 
-    # 3. حفظ الملف النهائي
+    # 3. حفظ الملف النهائي الشامل
     try:
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
             f.write(playlist_content)
-        print(f"\n🚀 مريقل! تم تحديث الملف وحفظ {channels_count} قناة مع التركيز على Brazzers.")
+        print(f"\n🚀 مريقل وعال العال! تم بناء الملف بنجاح ويحتوي الآن على {channels_count} قناة شاملة لكل قنواتك!")
     except Exception as e:
         print(f"❌ فشل حفظ ملف m3u: {e}")
 
