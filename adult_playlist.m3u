@@ -1,9 +1,1 @@
 #EXTM3U
-#EXTINF:-1 group-title="Adult M3U", Visit-X TV (Alternative)
-https://830606b53cb14be288075dc6bb497e59.egress.config.simplestreamcdn.com/visitx_live/live/visitxtv/bitrate1.m3u8
-
-#EXTINF:-1 group-title="Adult M3U", Babestation
-https://babestation.b-cdn.net/live/stream.m3u8
-
-#EXTINF:-1 group-title="Adult M3U", Blue Hustler (Promo)
-https://live.chilipeppermedia.com/hustler/live.m3u8
